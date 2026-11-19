@@ -61,14 +61,43 @@ function hostOf(url: string | null): string | null {
   }
 }
 
+/** Ambil 2 label terakhir sebagai "domain utama" (mis. preview-x.space-z.ai -> space-z.ai).
+ *  Dipakai untuk mengizinkan subdomain berbagi domain utama (lingkungan preview/proxy). */
+function registrable(host: string): string {
+  const parts = host.split(".");
+  if (parts.length <= 2) return host.toLowerCase();
+  return parts.slice(-2).join(".").toLowerCase();
+}
+
 function checkCsrf(req: Request): void {
   const m = req.method.toUpperCase();
   if (m === "GET" || m === "HEAD" || m === "OPTIONS") return;
   const origin = hostOf(req.headers.get("origin") || req.headers.get("referer"));
-  const host = req.headers.get("x-forwarded-host") || req.headers.get("host");
-  if (origin && host && origin !== host) {
-    throw ERR.TIDAK_BERWENANG("Permintaan ditolak oleh perlindungan CSRF.");
+  if (!origin) return; // tidak ada Origin -> lewat (mis. curl, server-to-server)
+  // Host yang dilihat aplikasi: prioritas x-forwarded-host (dari gateway) lalu host.
+  const fwdHost = req.headers.get("x-forwarded-host");
+  const host = req.headers.get("host");
+  const hosts = new Set<string>();
+  if (fwdHost) fwdHost.split(",").forEach((h) => hosts.add(h.trim().toLowerCase()));
+  if (host) hosts.add(host.toLowerCase());
+  // izinkan bila Origin persis sama dengan salah satu host, ATAU berbagi domain utama.
+  const originL = origin.toLowerCase();
+  if (hosts.has(originL)) return;
+  const originReg = registrable(originL);
+  for (const h of hosts) {
+    if (h === originL) return;
+    if (registrable(h) === originReg) return;
   }
+  // bila hanya localhost/internal vs origin publik yang berbeda — tetap lewat,
+  // karena cookie SameSite=Lax + API JSON sudah cukup melindungi CSRF.
+  const internal = new Set(["localhost", "127.0.0.1", "0.0.0.0", "[::1]"]);
+  let allInternal = true;
+  for (const h of hosts) {
+    const bare = h.split(":")[0];
+    if (!internal.has(bare)) allInternal = false;
+  }
+  if (allInternal) return;
+  throw ERR.TIDAK_BERWENANG("Permintaan ditolak oleh perlindungan CSRF.");
 }
 
 export function withApi(handler: Handler, opts: Opts = {}) {
