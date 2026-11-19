@@ -23,12 +23,16 @@ function parse(): Route {
 }
 
 export function useRoute(): Route {
-  const [route, setRoute] = useState<Route>(() =>
-    typeof window === "undefined"
-      ? { path: "/", segments: [], query: new URLSearchParams(), hash: "" }
-      : parse(),
-  );
+  // Selalu mulai dari nilai default agar server & client identik (anti
+  // hydration mismatch). Rute asli dibaca di useEffect setelah hydrasi.
+  const [route, setRoute] = useState<Route>({
+    path: "/",
+    segments: [],
+    query: new URLSearchParams(),
+    hash: "",
+  });
   useEffect(() => {
+    setRoute(parse());
     const on = () => setRoute(parse());
     window.addEventListener("hashchange", on);
     return () => window.removeEventListener("hashchange", on);
