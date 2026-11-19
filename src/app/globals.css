@@ -1,0 +1,301 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Arial, sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  /* ROOMIE palette (PRD Bagian 9.2) */
+  --radius: 0.625rem;
+  --background: #f4f7f9;
+  --foreground: #1f2d3a;
+  --card: #ffffff;
+  --card-foreground: #1f2d3a;
+  --popover: #ffffff;
+  --popover-foreground: #1f2d3a;
+  --primary: #0f4c5c;
+  --primary-foreground: #ffffff;
+  --secondary: #e6eef1;
+  --secondary-foreground: #0f4c5c;
+  --muted: #eef3f5;
+  --muted-foreground: #546e7a;
+  --accent: #e0f2f1;
+  --accent-foreground: #0f4c5c;
+  --destructive: #c62828;
+  --destructive-foreground: #ffffff;
+  --border: #cfd8dc;
+  --input: #cfd8dc;
+  --ring: #0f4c5c;
+  --chart-1: #0f4c5c;
+  --chart-2: #2e7d32;
+  --chart-3: #e65100;
+  --chart-4: #1565c0;
+  --chart-5: #6a1b9a;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1f2d3a;
+  --sidebar-primary: #0f4c5c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e0f2f1;
+  --sidebar-accent-foreground: #0f4c5c;
+  --sidebar-border: #cfd8dc;
+  --sidebar-ring: #0f4c5c;
+}
+
+.dark {
+  --background: #0b1f26;
+  --foreground: #e6eef1;
+  --card: #123038;
+  --card-foreground: #e6eef1;
+  --popover: #123038;
+  --popover-foreground: #e6eef1;
+  --primary: #2a8a9e;
+  --primary-foreground: #04141a;
+  --secondary: #1a3a44;
+  --secondary-foreground: #e6eef1;
+  --muted: #14303a;
+  --muted-foreground: #9fb3ba;
+  --accent: #1a4651;
+  --accent-foreground: #e6eef1;
+  --destructive: #ef5350;
+  --destructive-foreground: #ffffff;
+  --border: #1f414a;
+  --input: #1f414a;
+  --ring: #2a8a9e;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "cv01", "ss01";
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 22%, transparent);
+  }
+}
+
+/* Status colors (PRD 9.2) — selalu disertai teks, bukan warna saja */
+.st-roomie-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.st-roomie-status .dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+}
+.st-status-menunggu_kemahasiswaan,
+.st-status-menunggu_ga {
+  background: #fff3e0;
+  color: #e65100;
+}
+.st-status-menunggu_kemahasiswaan .dot,
+.st-status-menunggu_ga .dot {
+  background: #e65100;
+}
+.st-status-disetujui {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.st-status-disetujui .dot {
+  background: #2e7d32;
+}
+.st-status-ditolak {
+  background: #ffebee;
+  color: #c62828;
+}
+.st-status-ditolak .dot {
+  background: #c62828;
+}
+.st-status-dibatalkan {
+  background: #eceff1;
+  color: #546e7a;
+}
+.st-status-dibatalkan .dot {
+  background: #546e7a;
+}
+.st-status-berlangsung {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+.st-status-berlangsung .dot {
+  background: #1565c0;
+}
+.st-status-selesai {
+  background: #e0f2f1;
+  color: #00695c;
+}
+.st-status-selesai .dot {
+  background: #00695c;
+}
+
+/* Stepper horizontal */
+.roomie-stepper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+}
+.roomie-stepper .step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  min-width: 0;
+}
+.roomie-stepper .step .ring {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #eceff1;
+  color: #546e7a;
+  z-index: 1;
+}
+.roomie-stepper .step .label {
+  margin-top: 0.4rem;
+  font-size: 0.7rem;
+  color: #546e7a;
+  font-weight: 500;
+  line-height: 1.1;
+}
+.roomie-stepper .step::before {
+  content: "";
+  position: absolute;
+  top: 1rem;
+  left: -50%;
+  width: 100%;
+  height: 2px;
+  background: #eceff1;
+}
+.roomie-stepper .step:first-child::before {
+  display: none;
+}
+.roomie-stepper .step.done .ring {
+  background: #2e7d32;
+  color: #fff;
+}
+.roomie-stepper .step.done::before {
+  background: #2e7d32;
+}
+.roomie-stepper .step.active .ring {
+  background: #e65100;
+  color: #fff;
+  box-shadow: 0 0 0 4px #fff3e0;
+}
+.roomie-stepper .step.rejected .ring {
+  background: #c62828;
+  color: #fff;
+}
+
+/* Kalender mingguan */
+.roomie-cal-grid {
+  display: grid;
+  grid-template-columns: 56px repeat(7, minmax(0, 1fr));
+  gap: 0;
+}
+.roomie-cal-hour {
+  height: 48px;
+  border-top: 1px solid #eceff1;
+}
+.roomie-cal-cell {
+  border-top: 1px solid #eceff1;
+  border-left: 1px solid #eceff1;
+  position: relative;
+  min-height: 48px;
+}
+@media (max-width: 640px) {
+  .roomie-cal-grid {
+    grid-template-columns: 48px 1fr;
+  }
+}
+
+/* Print styles for cetak bukti */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+  .print-area {
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+
+/* Custom scrollbar untuk daftar panjang */
+.roomie-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #cfd8dc transparent;
+}
+.roomie-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.roomie-scroll::-webkit-scrollbar-thumb {
+  background: #cfd8dc;
+  border-radius: 999px;
+}
+.roomie-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Fokus terlihat untuk aksesibilitas */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
