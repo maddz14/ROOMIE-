@@ -94,7 +94,10 @@ export function Masuk() {
     }
   }
 
-  async function demoLogin(em: string) {
+  async function demoLogin(em: string, e?: React.MouseEvent) {
+    e?.preventDefault();
+    e?.stopPropagation();
+    if (busy) return;
     setEmail(em);
     setPassword("Roomie123!");
     setBusy(true);
@@ -370,7 +373,8 @@ export function Masuk() {
               {DEMO.map((d) => (
                 <button
                   key={d.email}
-                  onClick={() => demoLogin(d.email)}
+                  type="button"
+                  onClick={(e) => demoLogin(d.email, e)}
                   disabled={busy}
                   className="text-left px-3 py-2 rounded-lg border border-border hover:border-primary hover:bg-accent transition-colors disabled:opacity-50"
                 >

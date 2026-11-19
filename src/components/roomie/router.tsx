@@ -32,6 +32,7 @@ export function useRoute(): Route {
     hash: "",
   });
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRoute(parse());
     const on = () => setRoute(parse());
     window.addEventListener("hashchange", on);

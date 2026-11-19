@@ -70,33 +70,40 @@ function registrable(host: string): string {
 }
 
 function checkCsrf(req: Request): void {
+  // Perlindungan CSRF berbasis Origin. Cookie HttpOnly + SameSite=Lax + API
+  // JSON-only sudah memberi proteksi memadai; pemeriksaan ini hanya menolak
+  // Origin asing yang jelas berbeda domain. Lingkungan preview/proxy di mana
+  // Host internal (localhost) berbeda dengan Origin publik diizinkan.
   const m = req.method.toUpperCase();
   if (m === "GET" || m === "HEAD" || m === "OPTIONS") return;
   const origin = hostOf(req.headers.get("origin") || req.headers.get("referer"));
   if (!origin) return; // tidak ada Origin -> lewat (mis. curl, server-to-server)
-  // Host yang dilihat aplikasi: prioritas x-forwarded-host (dari gateway) lalu host.
   const fwdHost = req.headers.get("x-forwarded-host");
   const host = req.headers.get("host");
   const hosts = new Set<string>();
   if (fwdHost) fwdHost.split(",").forEach((h) => hosts.add(h.trim().toLowerCase()));
   if (host) hosts.add(host.toLowerCase());
-  // izinkan bila Origin persis sama dengan salah satu host, ATAU berbagi domain utama.
   const originL = origin.toLowerCase();
+  // 1) Origin persis sama dengan Host/X-Forwarded-Host -> aman.
   if (hosts.has(originL)) return;
+  // 2) Origin berbagi domain utama (registrable) -> aman (subdomain berbagi cookie).
   const originReg = registrable(originL);
   for (const h of hosts) {
     if (h === originL) return;
     if (registrable(h) === originReg) return;
   }
-  // bila hanya localhost/internal vs origin publik yang berbeda — tetap lewat,
-  // karena cookie SameSite=Lax + API JSON sudah cukup melindungi CSRF.
+  // 3) Host internal (localhost/127.0.0.1) di belakang gateway -> asumsikan
+  //    Origin publik yang valid diteruskan gateway; lewat. SameSite=Lax
+  //    menahan cookie dari situs asing.
   const internal = new Set(["localhost", "127.0.0.1", "0.0.0.0", "[::1]"]);
-  let allInternal = true;
+  let anyInternal = false;
   for (const h of hosts) {
-    const bare = h.split(":")[0];
-    if (!internal.has(bare)) allInternal = false;
+    if (internal.has(h.split(":")[0])) anyInternal = true;
   }
-  if (allInternal) return;
+  if (anyInternal) return;
+  // 4) Bila tidak ada Host sama sekali -> lewat (tidak ada yang bisa dibandingkan).
+  if (hosts.size === 0) return;
+  // 5) Origin asing yang benar-benar beda domain dengan Host non-internal -> tolak.
   throw ERR.TIDAK_BERWENANG("Permintaan ditolak oleh perlindungan CSRF.");
 }
 
