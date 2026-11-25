@@ -19,11 +19,11 @@ import { Eye, EyeOff, Building2 } from "lucide-react";
 import { useMeta } from "../meta";
 
 const DEMO = [
-  { email: "mahasiswa@roomie.test", label: "Peminjam", nama: "Rani Putri" },
-  { email: "kemahasiswaan@roomie.test", label: "Kemahasiswaan", nama: "Bu Sari" },
-  { email: "ga@roomie.test", label: "GA", nama: "Pak Budi" },
-  { email: "satpam@roomie.test", label: "Satpam", nama: "Pak Dimas" },
-  { email: "admin@roomie.test", label: "Admin", nama: "Admin ROOMIE" },
+  { email: "mahasiswa@roomie.test", label: "Peminjam (Mahasiswa)", nama: "Rani Putri", role: "Mode HP / Mahasiswa" },
+  { email: "kemahasiswaan@roomie.test", label: "Kemahasiswaan", nama: "Bu Sari", role: "Operator Tahap 1" },
+  { email: "ga@roomie.test", label: "Sarpras & GA", nama: "Pak Budi", role: "Operator Tahap 2" },
+  { email: "satpam@roomie.test", label: "Satpam", nama: "Pak Dimas", role: "Petugas Lapangan" },
+  { email: "admin@roomie.test", label: "Administrator", nama: "Admin ROOMIE", role: "Full Desktop Control" },
 ];
 
 export function Masuk() {
@@ -117,51 +117,60 @@ export function Masuk() {
       <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-8 items-center">
         {/* Branding kiri */}
         <div className="hidden lg:block px-4">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="grid place-items-center h-12 w-12 rounded-xl bg-primary text-primary-foreground font-bold text-xl">
-              R
-            </span>
+          <div className="flex items-center gap-3.5 mb-6">
+            <img
+              src="/logo.png"
+              alt="ROOMIE Logo"
+              className="h-16 w-auto object-contain drop-shadow-md"
+            />
             <div>
-              <p className="text-2xl font-bold tracking-tight">ROOMIE</p>
-              <p className="text-sm text-muted-foreground">
-                Peminjaman Ruang & Lapangan Kampus
+              <p className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
+                ROOMIE
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 border border-teal-200">
+                  Kampus
+                </span>
+              </p>
+              <p className="text-sm text-muted-foreground font-medium">
+                Sistem Peminjaman Ruangan & Fasilitas
               </p>
             </div>
           </div>
           <h1 className="text-3xl font-bold leading-tight text-foreground">
             Ajukan peminjaman ruang kampus dalam{" "}
-            <span className="text-primary">4 langkah</span>, tanpa kertas.
+            <span className="text-primary underline decoration-teal-400 decoration-wavy decoration-2">4 langkah mudah</span>, serba digital.
           </h1>
-          <p className="text-muted-foreground mt-4 max-w-md">
+          <p className="text-muted-foreground mt-4 max-w-md text-sm leading-relaxed">
             ROOMIE mengganti formulir kertas CWE-FORM: kalender terpadu,
-            persetujuan dua tahap, check-in oleh Satpam, dan laporan otomatis.
+            persetujuan berjenjang, verifikasi check-in Satpam, dan laporan otomatis.
           </p>
-          <ul className="mt-6 space-y-2 text-sm text-foreground/80">
-            <li className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> Tidak ada
-              double booking
+          <ul className="mt-6 space-y-2.5 text-sm text-foreground/85">
+            <li className="flex items-center gap-2.5">
+              <span className="h-2 w-2 rounded-full bg-teal-600 ring-2 ring-teal-200" />
+              Bebas bentrok jadwal & anti double-booking
             </li>
-            <li className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> Status
-              pengajuan terlacak setiap saat
+            <li className="flex items-center gap-2.5">
+              <span className="h-2 w-2 rounded-full bg-teal-600 ring-2 ring-teal-200" />
+              Status pengajuan real-time lewat ponsel
             </li>
-            <li className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" /> Bukti
-              dengan QR untuk Satpam
+            <li className="flex items-center gap-2.5">
+              <span className="h-2 w-2 rounded-full bg-teal-600 ring-2 ring-teal-200" />
+              Bukti digital resmi dengan QR Code Satpam
             </li>
           </ul>
         </div>
 
         {/* Kartu kanan */}
-        <div className="bg-card border border-border rounded-2xl shadow-sm p-6 sm:p-8 w-full max-w-md mx-auto">
-          <div className="flex items-center gap-2 mb-6 lg:hidden">
-            <span className="grid place-items-center h-10 w-10 rounded-xl bg-primary text-primary-foreground font-bold">
-              R
-            </span>
+        <div className="bg-card border border-border/80 rounded-2xl shadow-md p-6 sm:p-8 w-full max-w-md mx-auto">
+          <div className="flex items-center gap-3 mb-6 lg:hidden">
+            <img
+              src="/logo.png"
+              alt="ROOMIE Logo"
+              className="h-12 w-auto object-contain drop-shadow-xs"
+            />
             <div>
-              <p className="text-lg font-bold tracking-tight">ROOMIE</p>
+              <p className="text-xl font-bold tracking-tight text-foreground">ROOMIE</p>
               <p className="text-xs text-muted-foreground">
-                Peminjaman Ruang & Lapangan
+                Peminjaman Ruang & Lapangan Kampus
               </p>
             </div>
           </div>
@@ -376,11 +385,18 @@ export function Masuk() {
                   type="button"
                   onClick={(e) => demoLogin(d.email, e)}
                   disabled={busy}
-                  className="text-left px-3 py-2 rounded-lg border border-border hover:border-primary hover:bg-accent transition-colors disabled:opacity-50"
+                  className="text-left p-2.5 rounded-xl border border-border/80 hover:border-teal-600 hover:bg-teal-50/50 dark:hover:bg-teal-950/30 transition-all duration-150 disabled:opacity-50 group shadow-2xs cursor-pointer"
                 >
-                  <span className="block text-sm font-medium">{d.label}</span>
-                  <span className="block text-xs text-muted-foreground truncate">
-                    {d.nama}
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="block text-xs font-bold text-foreground group-hover:text-primary transition-colors">
+                      {d.label}
+                    </span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-muted text-muted-foreground font-mono">
+                      demo
+                    </span>
+                  </div>
+                  <span className="block text-[11px] text-muted-foreground truncate mt-0.5">
+                    {d.nama} · <span className="text-teal-700 dark:text-teal-400 font-medium">{d.role}</span>
                   </span>
                 </button>
               ))}

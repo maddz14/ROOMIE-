@@ -1,0 +1,243 @@
+// ROOMIE - Sistem Manajemen Peminjaman Ruangan dan Lapangan Kampus
+// Skema PostgreSQL untuk Supabase Database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  nama  String @unique
+  users User[]
+
+  @@map("Role")
+}
+
+model Unit {
+  id    Int    @id @default(autoincrement())
+  nama  String
+  tipe  String @default("lainnya") // ormawa | prodi | bagian | lainnya
+  users User[]
+
+  @@map("Unit")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  roleId       Int
+  role         Role      @relation(fields: [roleId], references: [id])
+  unitId       Int?
+  unit         Unit?     @relation(fields: [unitId], references: [id])
+  nama         String
+  nimNip       String    @unique
+  email        String    @unique
+  noHp         String?
+  jabatan      String?
+  passwordHash String
+  isActive     Int       @default(1) // 0 | 1
+  createdAt    DateTime  @default(now())
+
+  sessions         Session[]
+  bookingsPemohon  Booking[]         @relation("PemohonBookings")
+  approvals        BookingApproval[]
+  usageLogs        UsageLog[]
+  notifications    Notification[]
+  auditLogs        AuditLog[]
+
+  @@index([roleId])
+  @@index([isActive])
+  @@map("User")
+}
+
+model Session {
+  id        String   @id
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("Session")
+}
+
+model Resource {
+  id        Int      @id @default(autoincrement())
+  kode      String   @unique
+  nama      String
+  tipe      String   // ruang_kelas | ruang_meeting | auditorium | lapangan | area_lainnya
+  gedung    String?
+  lantai    String?
+  kapasitas Int      @default(0)
+  deskripsi String?
+  isActive  Int      @default(1) // 0 | 1
+
+  bookings    Booking[]
+  facilities  ResourceFacility[]
+
+  @@index([tipe])
+  @@index([isActive])
+  @@map("Resource")
+}
+
+model Facility {
+  id     Int    @id @default(autoincrement())
+  nama   String @unique
+  satuan String @default("unit")
+
+  resourceFacilities ResourceFacility[]
+  bookingFacilities   BookingFacility[]
+
+  @@map("Facility")
+}
+
+model ResourceFacility {
+  resourceId Int
+  facilityId Int
+  jumlah     Int      @default(1)
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  facility   Facility @relation(fields: [facilityId], references: [id])
+
+  @@id([resourceId, facilityId])
+  @@map("ResourceFacility")
+}
+
+model Holiday {
+  tanggal    String @id // YYYY-MM-DD (WIB)
+  keterangan String
+
+  @@map("Holiday")
+}
+
+model Setting {
+  kunci String @id
+  nilai String
+
+  @@map("Setting")
+}
+
+model Booking {
+  id                   Int       @id @default(autoincrement())
+  kodeBooking          String?   @unique
+  pemohonId            Int
+  pemohon              User      @relation("PemohonBookings", fields: [pemohonId], references: [id])
+  resourceId           Int
+  resource             Resource  @relation(fields: [resourceId], references: [id])
+  judulKegiatan        String
+  jenisKegiatan        String    // perkuliahan | ujian | rapat_internal | seminar_workshop | kegiatan_kemahasiswaan | tamu_eksternal | lainnya
+  jumlahPeserta        Int
+  penanggungJawab      String
+  tanggal              String    // YYYY-MM-DD (WIB)
+  jamMulai             String    // HH:MM
+  jamSelesai           String    // HH:MM
+  sifatPenggunaan      String    @default("sekali_pakai") // sekali_pakai | berkala
+  diLuarJamKerja       Int       @default(0) // 0 | 1
+  status               String    @default("menunggu_kemahasiswaan")
+  ketentuanDisetujuiAt DateTime?
+  alasanPembatalan     String?
+  catatanPemohon       String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  approvals     BookingApproval[]
+  facilities    BookingFacility[]
+  documents     BookingDocument[]
+  usageLog      UsageLog?
+  notifications Notification[]
+
+  @@index([resourceId, tanggal, jamMulai, jamSelesai])
+  @@index([status, tanggal])
+  @@index([pemohonId, createdAt])
+  @@map("Booking")
+}
+
+model BookingFacility {
+  bookingId  Int
+  facilityId Int
+  jumlah     Int      @default(1)
+  keterangan String?
+  booking    Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  facility   Facility @relation(fields: [facilityId], references: [id])
+
+  @@id([bookingId, facilityId])
+  @@map("BookingFacility")
+}
+
+model BookingDocument {
+  id         Int      @id @default(autoincrement())
+  bookingId  Int
+  booking    Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  namaFile   String
+  path       String
+  mime       String?
+  uploadedAt DateTime @default(now())
+
+  @@map("BookingDocument")
+}
+
+model BookingApproval {
+  id         Int       @id @default(autoincrement())
+  bookingId  Int
+  booking    Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  tahap      Int       // 1 | 2
+  approverId Int?
+  approver   User?     @relation(fields: [approverId], references: [id])
+  keputusan  String    @default("menunggu") // menunggu | disetujui | ditolak
+  alasan     String?
+  decidedAt  DateTime?
+
+  @@unique([bookingId, tahap])
+  @@map("BookingApproval")
+}
+
+model UsageLog {
+  id                 Int       @id @default(autoincrement())
+  bookingId          Int       @unique
+  booking            Booking   @relation(fields: [bookingId], references: [id])
+  petugasId          Int
+  petugas            User      @relation(fields: [petugasId], references: [id])
+  checkInAt          DateTime?
+  checkOutAt         DateTime?
+  kondisi            String?   // baik | ada_kerusakan
+  catatanKerusakan   String?
+  kunciDikembalikan  Int?      // 0 | 1
+  perangkatDimatikan Int?      // 0 | 1
+  catatanPetugas     String?
+
+  @@map("UsageLog")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookingId Int?
+  booking   Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  judul     String
+  pesan     String
+  isRead    Int      @default(0) // 0 | 1
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@map("Notification")
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  aksi      String
+  tabel     String
+  recordId  Int?
+  detail    String?
+  createdAt DateTime @default(now())
+
+  @@index([aksi])
+  @@index([createdAt])
+  @@map("AuditLog")
+}

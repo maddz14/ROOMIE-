@@ -14,7 +14,8 @@ export const metadata: Metadata = {
   description:
     "Sistem Manajemen Peminjaman Ruangan dan Lapangan Kampus. Pengajuan digital, persetujuan dua tahap, check-in/out, dan laporan.",
   icons: {
-    icon: "/logo.svg",
+    icon: "/logo.png",
+    apple: "/logo.png",
   },
 };
 

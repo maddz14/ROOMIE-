@@ -53,13 +53,17 @@ export function CetakBukti({ id }: { id: string }) {
 
       <div className="print-area bg-card border border-border rounded-xl p-8 max-w-3xl mx-auto">
         {/* Kop */}
-        <div className="text-center border-b-2 border-foreground pb-3 mb-5">
-          <h1 className="text-xl font-bold tracking-tight">
-            POLITEKNIK KELAPA SAWIT CITRA WIDYA EDUKASI
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Formulir Penggunaan Ruang dan Lapangan Kampus (CWE-FORM)
-          </p>
+        <div className="flex items-center justify-between border-b-2 border-foreground pb-4 mb-5 gap-4">
+          <img src="/logo.png" alt="ROOMIE Logo" className="h-14 w-auto object-contain shrink-0" />
+          <div className="text-center flex-1">
+            <h1 className="text-lg sm:text-xl font-bold tracking-tight">
+              POLITEKNIK KELAPA SAWIT CITRA WIDYA EDUKASI
+            </h1>
+            <p className="text-xs sm:text-sm text-muted-foreground font-medium">
+              Sistem Manajemen Peminjaman Ruang dan Lapangan Kampus (CWE-FORM)
+            </p>
+          </div>
+          <div className="w-14 shrink-0 hidden sm:block" />
         </div>
 
         <div className="flex items-start justify-between mb-5">

@@ -31,14 +31,16 @@ const ROLE_HOME: Record<string, string> = {
 
 function Footer() {
   return (
-    <footer className="mt-auto border-t border-border bg-card">
-      <div className="mx-auto max-w-6xl px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <span className="grid place-items-center h-6 w-6 rounded bg-primary text-primary-foreground font-bold text-[10px]">
-            R
-          </span>
+    <footer className="mt-auto border-t border-border bg-card mb-16 md:mb-0">
+      <div className="mx-auto max-w-6xl px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2.5">
+          <img
+            src="/logo.png"
+            alt="ROOMIE Logo"
+            className="h-7 w-auto object-contain"
+          />
           <span>
-            <strong className="text-foreground/80">ROOMIE</strong> — Sistem
+            <strong className="text-foreground/90 font-semibold">ROOMIE</strong> — Sistem
             Manajemen Peminjaman Ruang & Lapangan Kampus
           </span>
         </div>
@@ -179,7 +181,7 @@ export function App() {
       <div className="min-h-screen flex flex-col">
         <Nav />
         <main className="flex-1 w-full">
-          <div className="mx-auto max-w-6xl px-3 sm:px-4 py-6">
+          <div className="mx-auto max-w-6xl px-3 sm:px-4 py-5 pb-24 md:pb-8">
             <RoutedPage />
           </div>
         </main>
